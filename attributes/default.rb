@@ -2,6 +2,9 @@ case platform
 when "debian","ubuntu"
   set['varnish']['dir']     = "/etc/varnish"
   set['varnish']['default'] = "/etc/default/varnish"
+when "redhat", "centos", "fedora", "scientific"
+  set['varnish']['dir']     = "/etc/varnish"
+  set['varnish']['default'] = "/etc/sysconfig/varnish"
 end
 
 default['varnish']['version'] = "2.1"
@@ -19,6 +22,7 @@ default['varnish']['admin_listen_port'] = '6082'
 default['varnish']['user'] = 'varnish'
 default['varnish']['group'] = 'varnish'
 default['varnish']['ttl'] = '120'
+default['varnish']['thread_pools'] = '2'
 default['varnish']['min_threads'] ='5'
 default['varnish']['max_threads'] = '500'
 default['varnish']['thread_timeout'] = '300'

@@ -10,3 +10,6 @@ recipe "varnish::apt_repo", "Adds the official varnish project apt repository"
 %w{ubuntu debian}.each do |os|
   supports os
 end
+
+recommends "iptables"
+recommends "yum"

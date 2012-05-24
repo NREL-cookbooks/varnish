@@ -17,6 +17,12 @@ MEMLOCK=<%= node['varnish']['memlock'] %>
 # the -n switch, to have more instances on a single server.
 INSTANCE=<%= node['varnish']['instance'] %>
 
+# Set this to 1 to make init script reload try to switch vcl without restart.
+# To make this work, you need to set the following variables
+# explicit: VARNISH_VCL_CONF, VARNISH_ADMIN_LISTEN_ADDRESS,
+# VARNISH_ADMIN_LISTEN_PORT, VARNISH_SECRET_FILE, or in short,
+# use Alternative 3, Advanced configuration, below
+RELOAD_VCL=1
 
 
 # Pass the Daemon options
@@ -26,6 +32,7 @@ DAEMON_OPTS="-a <%= node['varnish']['listen_address'] %>:<%= node['varnish']['li
               -T <%= node['varnish']['admin_listen_address'] %>:<%= node['varnish']['admin_listen_port'] %> \
               -u <%= node['varnish']['user'] %> -g <%= node['varnish']['group'] %> \
               -t <%= node['varnish']['ttl'] %> \
+              -p thread_pools=<%= node['varnish']['thread_pools'] %> \
               -w <%= node['varnish']['min_threads'] %>,<%= node['varnish']['max_threads'] %>,<%= node['varnish']['thread_timeout'] %> \
               -s <%= node['varnish']['storage'] %>,<%= (node['varnish']['storage']=='file')?"#{node['varnish']['storage_file']},":'' %><%= node['varnish']['storage_size'] %> \
               -S <%= node['varnish']['secret_file'] %> \

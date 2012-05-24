@@ -18,6 +18,10 @@
 # limitations under the License.
 #
 
+include_recipe "iptables::http"
+include_recipe "iptables::https"
+include_recipe "yum::varnish"
+
 package "varnish"
 
 template "#{node['varnish']['dir']}/default.vcl" do
@@ -25,6 +29,7 @@ template "#{node['varnish']['dir']}/default.vcl" do
   owner "root"
   group "root"
   mode 0644
+  notifies :reload, "service[varnish]"
 end
 
 template node['varnish']['default'] do
@@ -41,6 +46,11 @@ service "varnish" do
 end
 
 service "varnishlog" do
+  supports :restart => true, :reload => true
+  action [ :enable, :start ]
+end
+
+service "varnishncsa" do
   supports :restart => true, :reload => true
   action [ :enable, :start ]
 end
