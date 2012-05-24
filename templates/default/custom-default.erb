@@ -10,12 +10,16 @@ START=<%= node['varnish']['start'] %>
 # Maximum number of open files (for ulimit -n)
 NFILES=<%= node['varnish']['nfiles'] %>
 
-# Maxiumum locked memory size for shared memory log
+# Locked shared memory (for ulimit -l)
+# Default log size is 82MB + header
 MEMLOCK=<%= node['varnish']['memlock'] %>
 
 # Default varnish instance name is the local nodename.  Can be overridden with
 # the -n switch, to have more instances on a single server.
 INSTANCE=<%= node['varnish']['instance'] %>
+
+# Maximum size of corefile (for ulimit -c). Default in Fedora is 0
+# DAEMON_COREFILE_LIMIT="unlimited"
 
 # Set this to 1 to make init script reload try to switch vcl without restart.
 # To make this work, you need to set the following variables
@@ -25,15 +29,53 @@ INSTANCE=<%= node['varnish']['instance'] %>
 RELOAD_VCL=1
 
 
-# Pass the Daemon options
+# Main configuration file.
+VARNISH_VCL_CONF=<%= node['varnish']['dir'] %>/<%= node['varnish']['vcl_conf'] %>
 
-DAEMON_OPTS="-a <%= node['varnish']['listen_address'] %>:<%= node['varnish']['listen_port'] %> \
-              -f <%= node['varnish']['dir'] %>/<%= node['varnish']['vcl_conf'] %> \
-              -T <%= node['varnish']['admin_listen_address'] %>:<%= node['varnish']['admin_listen_port'] %> \
-              -u <%= node['varnish']['user'] %> -g <%= node['varnish']['group'] %> \
-              -t <%= node['varnish']['ttl'] %> \
-              -p thread_pools=<%= node['varnish']['thread_pools'] %> \
-              -w <%= node['varnish']['min_threads'] %>,<%= node['varnish']['max_threads'] %>,<%= node['varnish']['thread_timeout'] %> \
-              -s <%= node['varnish']['storage'] %>,<%= (node['varnish']['storage']=='file')?"#{node['varnish']['storage_file']},":'' %><%= node['varnish']['storage_size'] %> \
-              -S <%= node['varnish']['secret_file'] %> \
-              -n $INSTANCE"
+# Default address and port to bind to
+# Blank address means all IPv4 and IPv6 interfaces, otherwise specify
+# a host name, an IPv4 dotted quad, or an IPv6 address in brackets.
+VARNISH_LISTEN_ADDRESS=<%= node['varnish']['listen_address'] %>
+VARNISH_LISTEN_PORT=<%= node['varnish']['listen_port'] %>
+
+# Telnet admin interface listen address and port
+VARNISH_ADMIN_LISTEN_ADDRESS=<%= node['varnish']['admin_listen_address'] %>
+VARNISH_ADMIN_LISTEN_PORT=<%= node['varnish']['admin_listen_port'] %>
+
+# Shared secret file for admin interface
+VARNISH_SECRET_FILE=<%= node['varnish']['secret_file'] %>
+
+# The minimum number of worker threads to start
+VARNISH_MIN_THREADS=<%= node['varnish']['min_threads'] %>
+
+# The Maximum number of worker threads to start
+VARNISH_MAX_THREADS=<%= node['varnish']['max_threads'] %>
+
+# Idle timeout for worker threads
+VARNISH_THREAD_TIMEOUT=<%= node['varnish']['thread_timeout'] %>
+
+# Cache file location
+VARNISH_STORAGE_FILE=",<%= node['varnish']['storage_file'] %>"
+
+# Cache file size: in bytes, optionally using k / M / G / T suffix,
+# or in percentage of available disk space using the % suffix.
+VARNISH_STORAGE_SIZE=<%= node['varnish']['storage_size'] %>
+
+# Backend storage specification
+VARNISH_STORAGE="<%= node['varnish']['storage'] %>${VARNISH_STORAGE_FILE},${VARNISH_STORAGE_SIZE}"
+
+# Default TTL used when the backend does not specify one
+VARNISH_TTL=<%= node['varnish']['ttl'] %>
+
+# DAEMON_OPTS is used by the init script.  If you add or remove options, make
+# sure you update this section, too.
+DAEMON_OPTS="-a ${VARNISH_LISTEN_ADDRESS}:${VARNISH_LISTEN_PORT} \
+             -f ${VARNISH_VCL_CONF} \
+             -T ${VARNISH_ADMIN_LISTEN_ADDRESS}:${VARNISH_ADMIN_LISTEN_PORT} \
+             -t ${VARNISH_TTL} \
+             -p thread_pools=<%= node['varnish']['thread_pools'] %> \
+             -w ${VARNISH_MIN_THREADS},${VARNISH_MAX_THREADS},${VARNISH_THREAD_TIMEOUT} \
+             -u <%= node['varnish']['user'] %> -g <%= node['varnish']['group'] %> \
+             -S ${VARNISH_SECRET_FILE} \
+             -s ${VARNISH_STORAGE} \
+             -n $INSTANCE"
