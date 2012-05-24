@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+ban = ARGV.first
+exec "varnishadm", "ban #{ban}"
