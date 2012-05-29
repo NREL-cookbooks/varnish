@@ -40,6 +40,17 @@ template node['varnish']['default'] do
   notifies :restart, "service[varnish]"
 end
 
+# The init.d script seems to fail to start unless the storage directory already
+# exists. So make sure any instance-specific directories exist.
+storage_dir = File.dirname(node[:varnish][:storage_file])
+storage_dir.gsub!("$INSTANCE", node[:varnish][:instance])
+directory storage_dir do
+  recursive true
+  owner "root"
+  group "root"
+  mode 0755
+end
+
 service "varnish" do
   supports :restart => true, :reload => true
   action [ :enable, :start ]
