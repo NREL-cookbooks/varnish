@@ -21,6 +21,14 @@ acl internal_nrel {
 }
 
 sub vcl_recv {
+  # Remove all Google Analytic cookies named __utm* (utma, utmb, etc)
+  set req.http.Cookie = regsuball(req.http.Cookie, "(^|; ) *__utm.=[^;]+;? *", "\1");
+
+  # Remove the cookie if it's now empty.
+  if(req.http.Cookie == "") {
+    remove req.http.Cookie;
+  }
+
   # Allow internal connections to force cache misses for testing/debug
   # purposes.
   if (req.http.Cache-Control ~ "no-cache" && client.ip ~ internal_nrel) {
