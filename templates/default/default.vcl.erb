@@ -32,9 +32,9 @@ sub vcl_recv {
     remove req.http.Cookie;
   }
 
-  # Remove the cookie for all static asset files, so they can always be
-  # returned from the cache, even if the user has other cookies set.
-  if(req.url ~ "\.(js|css|png|gif|jpg|jpeg)$") {
+  # Remove the cookie for all static files, so they can always be returned from
+  # the cache, even if the user has other cookies set.
+  if(req.url ~ "\.(html|js|css|png|gif|jpg|jpeg)$") {
     remove req.http.Cookie;
   }
 
