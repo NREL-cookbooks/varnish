@@ -21,11 +21,20 @@ acl internal_nrel {
 }
 
 sub vcl_recv {
-  # Remove all Google Analytic cookies named __utm* (utma, utmb, etc)
-  set req.http.Cookie = regsuball(req.http.Cookie, "(^|; ) *__utm.=[^;]+;? *", "\1");
+  # Remove all stats cookies:
+  #
+  # - Google Analytic cookies named __utm* (utma, utmb, etc)
+  # - Crazy Egg "is_returning" cookie
+  set req.http.Cookie = regsuball(req.http.Cookie, "(^|; ) *(__utm.|is_returning)=[^;]+;? *", "\1");
 
-  # Remove the cookie if it's now empty.
+  # Remove the cookie if it's now empty, so simple stats cookies don't prevent caching.
   if(req.http.Cookie == "") {
+    remove req.http.Cookie;
+  }
+
+  # Remove the cookie for all static asset files, so they can always be
+  # returned from the cache, even if the user has other cookies set.
+  if(req.url ~ "\.(js|css|png|gif|jpg|jpeg)$") {
     remove req.http.Cookie;
   }
 
