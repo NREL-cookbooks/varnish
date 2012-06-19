@@ -44,3 +44,11 @@ sub vcl_recv {
     set req.hash_always_miss = true;
   }
 }
+
+sub vcl_hash {
+  # Add the original protocol to the hash, so HTTPS and HTTP caches are kept
+  # separate.
+  if(req.http.X-Forwarded-Proto) {
+    hash_data(req.http.X-Forwarded-Proto);
+  }
+}
