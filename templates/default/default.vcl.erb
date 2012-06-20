@@ -52,3 +52,26 @@ sub vcl_hash {
     hash_data(req.http.X-Forwarded-Proto);
   }
 }
+
+import std;
+sub vcl_fetch {
+  # Parse cache control headers out of the custom Surrogate-Control header.
+  # This header controls only Varnish, and is not passed onto the end-user.
+  # This allows for independant control of how the end-user should cache things
+  # (Cache-Control) and how Varnish should cache things (Surrogate-Control).
+  if(beresp.http.Surrogate-Control) {
+    # Parse the max-age from the Surrogate-Control header and set the
+    # response's TTL to this value.
+    set beresp.http.surrogate_max_age = regsub(beresp.http.Surrogate-Control, "max-age\s*=\s*(\d+)", "\1s");
+    if(beresp.http.surrogate_max_age ~ "^\d+s$") {
+      set beresp.ttl = std.duration(beresp.http.surrogate_max_age, 0s);
+    }
+
+    # Remove temp variable.
+    unset beresp.http.surrogate_max_age;
+    
+    # Remove the Surrogate-Control header which is intended for internal 
+    # Varnish use only.
+    unset beresp.http.Surrogate-Control;
+  }
+}
