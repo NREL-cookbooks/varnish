@@ -69,8 +69,8 @@ sub vcl_fetch {
 
     # Remove temp variable.
     unset beresp.http.surrogate_max_age;
-    
-    # Remove the Surrogate-Control header which is intended for internal 
+
+    # Remove the Surrogate-Control header which is intended for internal
     # Varnish use only.
     unset beresp.http.Surrogate-Control;
   }
