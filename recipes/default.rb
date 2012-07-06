@@ -59,6 +59,14 @@ directory storage_dir do
   mode 0755
 end
 
+logrotate_app "varnish" do
+  path ["/var/log/varnish/*.log"]
+  frequency "daily"
+  rotate 90
+  create "644 root root"
+  cookbook "varnish"
+end
+
 service "varnish" do
   supports :restart => true, :reload => true
   action [ :enable, :start ]

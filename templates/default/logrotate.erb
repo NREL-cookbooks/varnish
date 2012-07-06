@@ -1,0 +1,14 @@
+<%= @path.join(" ") %> {
+  <%= @frequency %>
+  missingok
+  rotate <%= @rotate %>
+  compress
+  delaycompress
+  notifempty
+  create <%= @create %>
+  sharedscripts
+  postrotate
+    /bin/kill -HUP `cat /var/run/varnishlog.pid 2>/dev/null` 2> /dev/null || true
+    /bin/kill -HUP `cat /var/run/varnishncsa.pid 2>/dev/null` 2> /dev/null || true
+  endscript
+}
