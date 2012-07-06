@@ -40,7 +40,7 @@ sub vcl_recv {
 
   # Allow internal connections to force cache misses for testing/debug
   # purposes.
-  if (req.http.Cache-Control ~ "no-cache" && client.ip ~ internal_nrel) {
+  if(req.http.Cache-Control ~ "no-cache" && client.ip ~ internal_nrel) {
     set req.hash_always_miss = true;
   }
 }

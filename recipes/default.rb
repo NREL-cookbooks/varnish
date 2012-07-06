@@ -40,6 +40,14 @@ template node['varnish']['default'] do
   notifies :restart, "service[varnish]"
 end
 
+template node['varnish']['ncsa']['default'] do
+  source "sysconfig_varnishncsa.erb"
+  owner "root"
+  group "root"
+  mode 0644
+  notifies :restart, "service[varnishncsa]"
+end
+
 # The init.d script seems to fail to start unless the storage directory already
 # exists. So make sure any instance-specific directories exist.
 storage_dir = File.dirname(node[:varnish][:storage_file])
