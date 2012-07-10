@@ -22,6 +22,21 @@ include_recipe "iptables::http"
 include_recipe "iptables::https"
 include_recipe "yum::varnish"
 
+directory "/srv/log/varnish" do
+  recursive true
+  owner "root"
+  group "root"
+  mode 0755
+end
+
+execute "mv /var/log/varnish/* /srv/log/varnish/; rm -rf /var/log/varnish" do
+  not_if { ::File.symlink?("/var/log/varnish") }
+end
+
+link "/var/log/varnish" do
+  to "/srv/log/varnish"
+end
+
 package "varnish"
 
 template "#{node['varnish']['dir']}/default.vcl" do
