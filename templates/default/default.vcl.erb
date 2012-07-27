@@ -55,6 +55,19 @@ sub vcl_hash {
 
 import std;
 sub vcl_fetch {
+  # Don't cache error pages.
+  #
+  # (While it might be tempting to cache error pages, this stemmed from a
+  # situtation where a user accessed an uncached page using FrontPage, somehow
+  # generating a 406 error from the server. This error then got cached and was
+  # being served up to all users.)
+  if(beresp.status >= 400) {
+    # Allow not found errors to be cached, since those seem safe.
+    if(beresp.status != 404) {
+      set beresp.ttl = 0s;
+    }
+  }
+
   # Parse cache control headers out of the custom Surrogate-Control header.
   # This header controls only Varnish, and is not passed onto the end-user.
   # This allows for independant control of how the end-user should cache things
