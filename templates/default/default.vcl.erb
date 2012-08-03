@@ -38,9 +38,21 @@ sub vcl_recv {
     remove req.http.Cookie;
   }
 
-  # Allow internal connections to force cache misses for testing/debug
-  # purposes.
-  if(req.http.Cache-Control ~ "no-cache" && client.ip ~ internal_nrel) {
+  # Allow internal connections to bypass the cache for testing/debug purposes.
+  # This leaves the current cached content intact.
+  if(req.http.X-Bypass-Cache && client.ip ~ internal_nrel) {
+    # Force a cache miss by making sure a cookie is set (this approach ensures
+    # that Varnish's default vcl_recv still gets run so things like
+    # X-Forwarded-For get handled).
+    if(!req.http.Cookie) {
+      set req.http.Cookie = "Bypass-Cache";
+    }
+  }
+
+  # Allow internal connections to force cache refreshes for testing/debug
+  # purposes. This replaces the current cached content with the newly fetched
+  # data.
+  if(req.http.X-Refresh-Cache && client.ip ~ internal_nrel) {
     set req.hash_always_miss = true;
   }
 }
