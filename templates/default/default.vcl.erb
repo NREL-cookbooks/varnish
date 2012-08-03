@@ -1,3 +1,5 @@
+import std;
+
 backend default {
   .host = "<%= node['varnish']['backend_host'] %>";
   .port = "<%= node['varnish']['backend_port'] %>";
@@ -21,6 +23,15 @@ acl internal_nrel {
 }
 
 sub vcl_recv {
+  if(req.http.X-Forwarded-For) {
+    # Collect multiple, separate X-Forwarded-For headers into a single
+    # comma-delimited header. Without this, Varnish's default logic to append
+    # the client's IP to this header will incorrectly pick the first
+    # X-Forwarded-For header present and use that (which allows for IP address
+    # spoofing by the client).
+    std.collect(req.http.X-Forwarded-For);
+  }
+
   # Remove all stats cookies:
   #
   # - Google Analytic cookies named __utm* (utma, utmb, etc)
@@ -65,7 +76,6 @@ sub vcl_hash {
   }
 }
 
-import std;
 sub vcl_fetch {
   # Don't cache error pages.
   #
