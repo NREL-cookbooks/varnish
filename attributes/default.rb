@@ -36,3 +36,4 @@ default['varnish']['backend_host'] = 'localhost'
 default['varnish']['backend_port'] = '8080'
 
 default['varnish']['http_req_hdr_len'] = 8192
+default['varnish']['internal_networks'] = ['"localhost"']

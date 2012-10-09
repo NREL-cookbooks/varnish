@@ -5,21 +5,10 @@ backend default {
   .port = "<%= node['varnish']['backend_port'] %>";
 }
 
-acl internal_nrel {
-  "localhost";
-
-
-
-
-
-
-
-
-
-
-
-
-
+acl internal_networks {
+  <% node['varnish']['internal_networks'].each do |network| %>
+    <%= network %>;
+  <% end %>
 }
 
 sub vcl_recv {
@@ -51,7 +40,7 @@ sub vcl_recv {
 
   # Allow internal connections to bypass the cache for testing/debug purposes.
   # This leaves the current cached content intact.
-  if(req.http.X-Bypass-Cache && client.ip ~ internal_nrel) {
+  if(req.http.X-Bypass-Cache && client.ip ~ internal_networks) {
     # Force a cache miss by making sure a cookie is set (this approach ensures
     # that Varnish's default vcl_recv still gets run so things like
     # X-Forwarded-For get handled).
@@ -63,7 +52,7 @@ sub vcl_recv {
   # Allow internal connections to force cache refreshes for testing/debug
   # purposes. This replaces the current cached content with the newly fetched
   # data.
-  if(req.http.X-Refresh-Cache && client.ip ~ internal_nrel) {
+  if(req.http.X-Refresh-Cache && client.ip ~ internal_networks) {
     set req.hash_always_miss = true;
   }
 }
