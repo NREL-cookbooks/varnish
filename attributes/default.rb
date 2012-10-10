@@ -34,6 +34,7 @@ default['varnish']['storage_size'] = '1G'
 
 default['varnish']['backend_host'] = 'localhost'
 default['varnish']['backend_port'] = '8080'
+default['varnish']['backend_first_byte_timeout'] = '60s'
 
 default['varnish']['http_req_hdr_len'] = 8192
 default['varnish']['internal_networks'] = ['"localhost"']

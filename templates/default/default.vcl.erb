@@ -3,6 +3,7 @@ import std;
 backend default {
   .host = "<%= node['varnish']['backend_host'] %>";
   .port = "<%= node['varnish']['backend_port'] %>";
+  .first_byte_timeout = <%= node['varnish']['backend_first_byte_timeout'] %>;
 }
 
 acl internal_networks {
