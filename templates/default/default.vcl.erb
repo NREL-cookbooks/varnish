@@ -26,7 +26,7 @@ sub vcl_recv {
   #
   # - Google Analytic cookies named __utm* (utma, utmb, utmmobile, etc)
   # - Crazy Egg "is_returning" cookie
-  set req.http.Cookie = regsuball(req.http.Cookie, "(^|; ) *(__utm.*|is_returning)=[^;]+;? *", "\1");
+  set req.http.Cookie = regsuball(req.http.Cookie, "(^|; ) *(__utm[^=]+|is_returning)=[^;]+;? *", "\1");
 
   # Remove the cookie if it's now empty, so simple stats cookies don't prevent caching.
   if(req.http.Cookie == "") {
