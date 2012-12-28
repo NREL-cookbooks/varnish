@@ -74,6 +74,15 @@ directory storage_dir do
   mode 0755
 end
 
+# Even if storage_file is changed, Varnish seems to demand that
+# /var/lib/varnish/INSTANCE exist before it will boot.
+directory "/var/lib/varnish/#{node[:varnish][:instance]}" do
+  recursive true
+  owner "root"
+  group "root"
+  mode 0755
+end
+
 logrotate_app "varnish" do
   path ["/var/log/varnish/*.log"]
   frequency "daily"
