@@ -39,12 +39,15 @@ end
 
 package "varnish"
 
-template "#{node['varnish']['dir']}/default.vcl" do
-  source "default.vcl.erb"
+template "#{node['varnish']['dir']}/#{node['varnish']['vcl_conf']}" do
+  source node['varnish']['vcl_source']
+  if node['varnish']['vcl_cookbook']
+    cookbook node['varnish']['vcl_cookbook']
+  end
   owner "root"
   group "root"
   mode 0644
-  notifies :reload, "service[varnish]"
+  notifies :restart, "service[varnish]"
 end
 
 template node['varnish']['default'] do
