@@ -66,6 +66,20 @@ template node['varnish']['ncsa']['default'] do
   notifies :restart, "service[varnishncsa]"
 end
 
+# The shm log should reside on a tmpfs partition so it doesn't result in I/O:
+# https://www.varnish-software.com/static/book/Tuning.html#the-shared-memory-log
+# https://www.varnish-cache.org/trac/ticket/1119
+mount "/var/lib/varnish" do
+  fstype "tmpfs"
+  device "tmpfs"
+  options "defaults,size=#{node[:varnish][:shm_tmpfs_size]}"
+  pass 0
+  action [:mount, :enable]
+  notifies :restart, "service[varnish]"
+  notifies :restart, "service[varnishncsa]"
+  notifies :restart, "service[varnishlog]"
+end
+
 # The init.d script seems to fail to start unless the storage directory already
 # exists. So make sure any instance-specific directories exist.
 storage_dir = File.dirname(node[:varnish][:storage_file])
