@@ -41,7 +41,9 @@ default['varnish']['backend_port'] = '8080'
 default['varnish']['backend_first_byte_timeout'] = '60s'
 
 default['varnish']['shm_log_size'] = '80m'
-default['varnish']['shm_tmpfs_size'] = '84m'
+# Seems to need to be at least double the size of shm_log_size so restarts can
+# occur without errors.
+default['varnish']['shm_tmpfs_size'] = '200m'
 default['varnish']['cli_timeout'] = 10
 default['varnish']['http_req_hdr_len'] = 8192
 default['varnish']['internal_networks'] = ['"localhost"']
