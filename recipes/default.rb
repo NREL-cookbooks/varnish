@@ -66,6 +66,14 @@ template node['varnish']['ncsa']['default'] do
   notifies :restart, "service[varnishncsa]"
 end
 
+template node['varnish']['log']['default'] do
+  source "sysconfig_varnishlog.erb"
+  owner "root"
+  group "root"
+  mode 0644
+  notifies :restart, "service[varnishlog]"
+end
+
 # The shm log should reside on a tmpfs partition so it doesn't result in I/O:
 # https://www.varnish-software.com/static/book/Tuning.html#the-shared-memory-log
 # https://www.varnish-cache.org/trac/ticket/1119
@@ -89,6 +97,11 @@ directory storage_dir do
   owner "root"
   group "root"
   mode 0755
+
+  # If the instance name or directory changes, restart all.
+  notifies :restart, "service[varnish]"
+  notifies :restart, "service[varnishncsa]"
+  notifies :restart, "service[varnishlog]"
 end
 
 # Even if storage_file is changed, Varnish seems to demand that

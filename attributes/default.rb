@@ -2,10 +2,12 @@ case platform
 when "debian","ubuntu"
   set['varnish']['dir']     = "/etc/varnish"
   set['varnish']['default'] = "/etc/default/varnish"
+  set['varnish']['log']['default'] = "/etc/default/varnishlog"
   set['varnish']['ncsa']['default'] = "/etc/default/varnishncsa"
 when "redhat", "centos", "fedora", "scientific"
   set['varnish']['dir']     = "/etc/varnish"
   set['varnish']['default'] = "/etc/sysconfig/varnish"
+  set['varnish']['log']['default'] = "/etc/sysconfig/varnishlog"
   set['varnish']['ncsa']['default'] = "/etc/sysconfig/varnishncsa"
 end
 
