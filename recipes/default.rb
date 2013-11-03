@@ -118,7 +118,13 @@ logrotate_app "varnish" do
   frequency "daily"
   rotate 90
   create "644 root root"
-  cookbook "varnish"
+  options %w(missingok compress delaycompress notifempty)
+  sharedscripts true
+
+  postrotate <<-eos
+    /bin/kill -HUP `cat /var/run/varnishlog.pid 2>/dev/null` 2> /dev/null || true
+    /bin/kill -HUP `cat /var/run/varnishncsa.pid 2>/dev/null` 2> /dev/null || true
+  eos
 end
 
 service "varnish" do
