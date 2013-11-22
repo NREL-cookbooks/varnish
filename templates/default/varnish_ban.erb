@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
 ban = ARGV.first
-exec "varnishadm", "ban #{ban}"
+exec "varnishadm", "-n", "<%= node['varnish']['instance'] %>", "ban #{ban}"
