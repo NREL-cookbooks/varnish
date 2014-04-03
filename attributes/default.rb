@@ -50,3 +50,5 @@ default['varnish']['cli_timeout'] = 10
 default['varnish']['http_req_hdr_len'] = 8192
 default['varnish']['internal_networks'] = ['"localhost"']
 default['varnish']['includes'] = []
+
+default['varnish']['varnishlog']['disabled'] = false

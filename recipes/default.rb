@@ -134,7 +134,11 @@ end
 
 service "varnishlog" do
   supports :restart => true, :reload => true
-  action [ :enable, :start ]
+  if(node[:varnish][:varnishlog][:disabled])
+    action [ :stop, :disable ]
+  else
+    action [ :enable, :start ]
+  end
 end
 
 service "varnishncsa" do
