@@ -76,6 +76,7 @@ DAEMON_OPTS="-a ${VARNISH_LISTEN_ADDRESS}:${VARNISH_LISTEN_PORT} \
              -l <%= node['varnish']['shm_log_size'] %> \
              -p thread_pools=<%= node['varnish']['thread_pools'] %> \
              -p cli_timeout=<%= node['varnish']['cli_timeout'] %> \
+             -p http_gzip_support=<%= node['varnish']['http_gzip_support'] %> \
              -p http_req_hdr_len=<%= node['varnish']['http_req_hdr_len'] %> \
              -w ${VARNISH_MIN_THREADS},${VARNISH_MAX_THREADS},${VARNISH_THREAD_TIMEOUT} \
              -u <%= node['varnish']['user'] %> -g <%= node['varnish']['group'] %> \

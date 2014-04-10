@@ -52,3 +52,5 @@ default['varnish']['internal_networks'] = ['"localhost"']
 default['varnish']['includes'] = []
 
 default['varnish']['varnishlog']['disabled'] = false
+
+default['varnish']['http_gzip_support'] = 'on'
