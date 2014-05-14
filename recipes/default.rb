@@ -37,7 +37,9 @@ link "/var/log/varnish" do
   to "/srv/log/varnish"
 end
 
-package "varnish"
+package "varnish" do
+  version node[:varnish][:package_version]
+end
 
 template "#{node['varnish']['dir']}/#{node['varnish']['vcl_conf']}" do
   source node['varnish']['vcl_source']
