@@ -100,8 +100,10 @@ sub vcl_fetch {
     unset beresp.http.Surrogate-Control;
   }
 
+  <% if(node['varnish']['do_stream']) %>
   # Allow for streaming responses.
   set beresp.do_stream = true;
+  <% end %>
 }
 
 <% node['varnish']['includes'].each do |include| %>

@@ -53,4 +53,5 @@ default['varnish']['includes'] = []
 
 default['varnish']['varnishlog']['disabled'] = false
 
+default['varnish']['do_stream'] = false
 default['varnish']['http_gzip_support'] = 'on'
