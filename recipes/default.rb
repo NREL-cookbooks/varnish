@@ -20,7 +20,12 @@
 
 include_recipe "iptables::http"
 include_recipe "iptables::https"
-include_recipe "yum::varnish"
+
+if(node[:varnish][:version] && node[:varnish][:version].to_f >= 4.0)
+  include_recipe "yum::varnish4"
+else
+  include_recipe "yum::varnish"
+end
 
 directory "/srv/log/varnish" do
   recursive true
@@ -39,6 +44,9 @@ end
 
 package "varnish" do
   version node[:varnish][:package_version]
+  notifies :restart, "service[varnish]"
+  notifies :restart, "service[varnishncsa]"
+  notifies :restart, "service[varnishlog]"
 end
 
 template "#{node['varnish']['dir']}/#{node['varnish']['vcl_conf']}" do
