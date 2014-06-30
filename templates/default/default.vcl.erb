@@ -29,8 +29,16 @@ sub vcl_recv {
   # Remove all stats cookies:
   #
   # - Google Analytic cookies named __utm* (utma, utmb, utmmobile, etc)
+  # - Google Analytic cookies named _ga
   # - Crazy Egg "is_returning" cookie
-  set req.http.Cookie = regsuball(req.http.Cookie, "(^|; ) *(__utm[^=]+|is_returning)=[^;]+;? *", "\1");
+  # - PEAR Auth "authchallenge" cookie (this library sets a global challenge
+  #   cookie that's only used to check the session, so it should be safe to
+  #   cache even when this is present).
+  # - NREL single sign on cookies named SimpleSAML* (Note, this should not be
+  #   present if any of our tools ever use the single sign on, but since
+  #   we're not this is preventing page caches for most internal people that
+  #   happen to be logged into another NREL tool).
+  set req.http.Cookie = regsuball(req.http.Cookie, "(^|; ) *(__utm[^=]+|_ga|is_returning|authchallenge|SimpleSAML[^=]+)=[^;]+;? *", "\1");
 
   # Remove the cookie if it's now empty, so simple stats cookies don't prevent caching.
   if(req.http.Cookie == "") {
