@@ -124,7 +124,20 @@ directory "/var/lib/varnish/#{node[:varnish][:instance]}" do
 end
 
 logrotate_app "varnish" do
-  path ["/var/log/varnish/*.log"]
+  path ["/var/log/varnish/varnish.log"]
+  frequency "daily"
+  rotate 21
+  create "644 root root"
+  options %w(missingok compress delaycompress notifempty)
+  sharedscripts true
+
+  postrotate <<-eos
+    /bin/kill -HUP `cat /var/run/varnishlog.pid 2>/dev/null` 2> /dev/null || true
+  eos
+end
+
+logrotate_app "varnishncsa" do
+  path ["/var/log/varnish/varnishncsa.log"]
   frequency "daily"
   rotate 90
   create "644 root root"
@@ -132,7 +145,6 @@ logrotate_app "varnish" do
   sharedscripts true
 
   postrotate <<-eos
-    /bin/kill -HUP `cat /var/run/varnishlog.pid 2>/dev/null` 2> /dev/null || true
     /bin/kill -HUP `cat /var/run/varnishncsa.pid 2>/dev/null` 2> /dev/null || true
   eos
 end
