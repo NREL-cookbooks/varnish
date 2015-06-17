@@ -38,7 +38,7 @@ sub vcl_recv {
   #   present if any of our tools ever use the single sign on, but since
   #   we're not this is preventing page caches for most internal people that
   #   happen to be logged into another NREL tool).
-  set req.http.Cookie = regsuball(req.http.Cookie, "(^|; ) *(__utm[^=]+|_ga|is_returning|authchallenge|SimpleSAML[^=]+)=[^;]+;? *", "\1");
+  set req.http.Cookie = regsuball(req.http.Cookie, "(^|; ) *(__utm[^=]+|_ga|is_returning|authchallenge|SimpleSAML[^=]+|grGA|ssGA|_ga[^=]+)=[^;]+;? *", "\1");
 
   # Remove the cookie if it's now empty, so simple stats cookies don't prevent caching.
   if(req.http.Cookie == "") {
